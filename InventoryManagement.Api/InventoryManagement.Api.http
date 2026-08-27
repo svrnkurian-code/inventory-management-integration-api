@@ -1,0 +1,80 @@
+@InventoryManagement_Api_HostAddress = https://localhost:7016
+
+POST {{InventoryManagement_Api_HostAddress}}/api/Products
+Content-Type: application/json
+
+{
+  "name": "Monitor",
+  "price": 12000,
+  "quantityInStock": 5
+}
+
+###
+
+PUT https://localhost:7016/api/Products/3
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard",
+  "price": 2200,
+  "quantityInStock": 8
+}
+
+###
+
+DELETE https://localhost:7016/api/Products/3
+
+
+###
+
+POST https://localhost:7016/api/Products
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": -10,
+  "quantityInStock": -3
+}
+
+###
+
+POST https://localhost:7016/api/Products/4/stock-adjustments
+Content-Type: application/json
+
+{
+  "type": "Received",
+  "quantityChange": 10,
+  "reason": "Initial supplier delivery",
+  "externalReference": "SUPPLIER-DELIVERY-001"
+}
+
+###
+
+POST https://localhost:7016/api/Products
+Content-Type: application/json
+
+{
+  "name": "Barcode Scanner",
+  "price": 3500,
+  "quantityInStock": 0
+}
+
+###
+
+POST https://localhost:7016/api/inbound-receipts
+Content-Type: application/json
+
+{
+  "partnerCode": "WAREHOUSE-A",
+  "receiptReference": "GRN-2026-0001",
+  "lines": [
+    {
+      "productId": 4,
+      "quantityReceived": 3
+    },
+    {
+      "productId": 5,
+      "quantityReceived": 2
+    }
+  ]
+}
