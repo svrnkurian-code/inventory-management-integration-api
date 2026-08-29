@@ -78,6 +78,7 @@ Update-Database
 
 4. Start the API with `F5`.
 5. Use the included `.http` requests or a REST client to call the endpoints.
+6. Open `https://localhost:7016/swagger` to explore and test the API interactively.
 
 ## Tests
 
