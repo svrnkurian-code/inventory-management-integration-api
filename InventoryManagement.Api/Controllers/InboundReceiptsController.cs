@@ -1,6 +1,8 @@
 ﻿using InventoryManagement.Api.Contracts;
 using InventoryManagement.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using InventoryManagement.Api.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.Api.Controllers;
 
@@ -15,6 +17,7 @@ public class InboundReceiptsController : ControllerBase
         _productService = productService;
     }
 
+    [Authorize(Roles = Roles.WarehouseIntegration)]
     [HttpPost]
     public async Task<ActionResult<InboundReceiptResponse>> Receive(
         InboundStockReceiptRequest request)

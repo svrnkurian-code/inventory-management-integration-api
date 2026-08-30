@@ -2,6 +2,8 @@
 using InventoryManagement.Api.Models;
 using InventoryManagement.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using InventoryManagement.Api.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.Api.Controllers;
 
@@ -37,6 +39,7 @@ public class ProductsController : ControllerBase
         return Ok(ToResponse(product));
     }
 
+    [Authorize(Roles = Roles.InventoryManager)]
     [HttpPost]
     public async Task<ActionResult<ProductResponse>> Create(CreateProductRequest request)
     {
@@ -46,6 +49,7 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
+    [Authorize(Roles = Roles.InventoryManager)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateProductRequest request)
     {
@@ -59,6 +63,7 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = Roles.InventoryManager)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -72,6 +77,7 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = Roles.InventoryManager)]
     [HttpPost("{id}/stock-adjustments")]
     public async Task<ActionResult<StockAdjustmentResponse>> CreateStockAdjustment(
     int id,

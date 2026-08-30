@@ -89,3 +89,15 @@ The current tests verify that:
 - a valid inbound receipt increases stock and creates receipt/audit records;
 - a duplicate receipt does not increase stock twice;
 - a receipt containing an unknown product does not change any stock.
+
+## Authentication and Authorization
+
+The API uses JWT bearer authentication and role-based authorization.
+
+| Role | Permissions |
+|---|---|
+| `InventoryReader` | View products |
+| `InventoryManager` | Create, update, delete products, and record manual stock adjustments |
+| `WarehouseIntegration` | Submit inbound warehouse receipts |
+
+For local development, JWTs are created with `dotnet user-jwts`. Tokens and signing keys are local-only and must never be committed to source control.
