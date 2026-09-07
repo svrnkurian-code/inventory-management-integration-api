@@ -14,9 +14,26 @@ public class ProductService : IProductService
         _context = context;
     }
 
-    public async Task<List<Product>> GetAllAsync()
+    public async Task<PagedResult<Product>> GetAllAsync(
+    int pageNumber,
+    int pageSize)
     {
-        return await _context.Products.ToListAsync();
+        var totalCount = await _context.Products.CountAsync();
+
+        var products = await _context.Products
+            .OrderBy(product => product.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Product>
+        {
+            Items = products,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
     }
 
     public async Task<Product?> GetByIdAsync(int id)

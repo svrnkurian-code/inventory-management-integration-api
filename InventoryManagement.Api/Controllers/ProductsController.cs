@@ -19,11 +19,26 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAll()
+    public async Task<ActionResult<PagedResult<ProductResponse>>> GetAll(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
     {
-        var products = await _productService.GetAllAsync();
+        if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
+        {
+            return BadRequest(
+                "pageNumber must be at least 1 and pageSize must be between 1 and 100.");
+        }
 
-        return Ok(products.Select(ToResponse));
+        var productsPage = await _productService.GetAllAsync(pageNumber, pageSize);
+
+        return Ok(new PagedResult<ProductResponse>
+        {
+            Items = productsPage.Items.Select(ToResponse).ToList(),
+            PageNumber = productsPage.PageNumber,
+            PageSize = productsPage.PageSize,
+            TotalCount = productsPage.TotalCount,
+            TotalPages = productsPage.TotalPages
+        });
     }
 
     [HttpGet("{id}")]

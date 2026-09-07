@@ -5,7 +5,7 @@ namespace InventoryManagement.Api.Services;
 
 public interface IProductService
 {
-    Task<List<Product>> GetAllAsync();
+    Task<PagedResult<Product>> GetAllAsync(int pageNumber, int pageSize);
 
     Task<Product?> GetByIdAsync(int id);
 

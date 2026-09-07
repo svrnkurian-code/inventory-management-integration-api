@@ -67,6 +67,42 @@ public class ProductServiceTests
     }
 
     [Fact]
+    public async Task GetAllAsync_ReturnsTheRequestedPage()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<InventoryDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        await using var context = new InventoryDbContext(options);
+        await context.Database.EnsureCreatedAsync();
+
+        context.Products.AddRange(
+            new Product { Name = "Product 1", Price = 100, QuantityInStock = 1 },
+            new Product { Name = "Product 2", Price = 200, QuantityInStock = 2 },
+            new Product { Name = "Product 3", Price = 300, QuantityInStock = 3 },
+            new Product { Name = "Product 4", Price = 400, QuantityInStock = 4 },
+            new Product { Name = "Product 5", Price = 500, QuantityInStock = 5 });
+
+        await context.SaveChangesAsync();
+
+        var service = new ProductService(context);
+
+        var result = await service.GetAllAsync(pageNumber: 2, pageSize: 2);
+
+        Assert.Equal(2, result.Items.Count);
+        Assert.Equal(2, result.PageNumber);
+        Assert.Equal(2, result.PageSize);
+        Assert.Equal(5, result.TotalCount);
+        Assert.Equal(3, result.TotalPages);
+
+        Assert.Equal("Product 3", result.Items[0].Name);
+        Assert.Equal("Product 4", result.Items[1].Name);
+    }
+
+    [Fact]
     public async Task ProcessInboundReceiptAsync_UnknownProduct_DoesNotChangeStock()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
