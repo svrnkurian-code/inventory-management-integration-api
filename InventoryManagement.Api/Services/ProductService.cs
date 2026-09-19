@@ -16,11 +16,19 @@ public class ProductService : IProductService
 
     public async Task<PagedResult<Product>> GetAllAsync(
     int pageNumber,
-    int pageSize)
+    int pageSize,
+    string? searchTerm)
     {
-        var totalCount = await _context.Products.CountAsync();
+        var query = _context.Products.AsQueryable();
 
-        var products = await _context.Products
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(product => product.Name.Contains(searchTerm));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var products = await query
             .OrderBy(product => product.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

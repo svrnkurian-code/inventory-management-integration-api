@@ -21,7 +21,8 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<PagedResult<ProductResponse>>> GetAll(
     [FromQuery] int pageNumber = 1,
-    [FromQuery] int pageSize = 10)
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? searchTerm = null)
     {
         if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
         {
@@ -29,7 +30,7 @@ public class ProductsController : ControllerBase
                 "pageNumber must be at least 1 and pageSize must be between 1 and 100.");
         }
 
-        var productsPage = await _productService.GetAllAsync(pageNumber, pageSize);
+        var productsPage = await _productService.GetAllAsync(pageNumber, pageSize,searchTerm);
 
         return Ok(new PagedResult<ProductResponse>
         {

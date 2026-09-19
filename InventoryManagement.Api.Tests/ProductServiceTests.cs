@@ -90,7 +90,7 @@ public class ProductServiceTests
 
         var service = new ProductService(context);
 
-        var result = await service.GetAllAsync(pageNumber: 2, pageSize: 2);
+        var result = await service.GetAllAsync(    pageNumber: 2,    pageSize: 2,    searchTerm: null);
 
         Assert.Equal(2, result.Items.Count);
         Assert.Equal(2, result.PageNumber);
@@ -157,5 +157,37 @@ public class ProductServiceTests
         Assert.Equal(5, savedProduct.QuantityInStock);
         Assert.Equal(0, await context.InboundReceipts.CountAsync());
         Assert.Equal(0, await context.StockAdjustments.CountAsync());
+    }
+
+    [Fact]
+    public async Task GetAllAsync_SearchTerm_ReturnsMatchingProductsOnly()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<InventoryDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        await using var context = new InventoryDbContext(options);
+        await context.Database.EnsureCreatedAsync();
+
+        context.Products.AddRange(
+            new Product { Name = "Keyboard", Price = 1500, QuantityInStock = 10 },
+            new Product { Name = "Mouse", Price = 800, QuantityInStock = 25 },
+            new Product { Name = "Wireless Mouse", Price = 1200, QuantityInStock = 15 });
+
+        await context.SaveChangesAsync();
+
+        var service = new ProductService(context);
+
+        var result = await service.GetAllAsync(
+            pageNumber: 1,
+            pageSize: 10,
+            searchTerm: "Mouse");
+
+        Assert.Equal(2, result.TotalCount);
+        Assert.Equal(2, result.Items.Count);
+        Assert.All(result.Items, product => Assert.Contains("Mouse", product.Name));
     }
 }
